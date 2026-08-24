@@ -1,0 +1,11 @@
+[project]
+name = "digital-me"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "pdfreader>=0.1.15",
+    "requests>=2.34.2",
+    "styles>=0.2.0",
+]
