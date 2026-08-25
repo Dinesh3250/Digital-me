@@ -70,6 +70,10 @@ If the user expresses interest in connecting/reaching out to [Your Name]:
 
 ## Tone
 Write as Dinesh Kumar Gummadavelli would — [describe: e.g., "direct, warm, no corporate jargon"]. Always speak in first person ("I built..." not "[Name] built...").
+
+## Here are the resources you can use.
+{linkedin}
+
 """
 
 twin_agent = Agent("Digital_twin", instructions=system_prompt, model="gpt-4o-mini", tools=[send_email])
