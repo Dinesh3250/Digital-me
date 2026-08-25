@@ -10,6 +10,14 @@ from email.message import EmailMessage
 import smtplib
 import logging
 from styles import CSS, JS, EXAMPLES
+import socket
+
+ipaddr_list = socket.getaddrinfo()
+
+def get_ipv4_only(*args, **kwargs):
+    return [ai for ai in ipaddr_list(*args, **kwargs) if ai[0] == socket.AF_INET]
+
+socket.getaddrinfo = get_ipv4_only
 
 load_dotenv(override=True)
 openai = OpenAI()
@@ -39,8 +47,12 @@ def send_email(subject: str, text_body: str, html_body: str) -> str:
     msg.add_alternative(html_body, subtype='html')
 
     try:
-        with smtplib.SMTP(EMAIL_SMTP_SERVER, 587, timeout=15) as smtp:
+        ipv4_addr = socket.getaddrinfo(EMAIL_SMTP_SERVER, 587, socket.AF_INET)[0][4][0]
+
+        with smtplib.SMTP(ipv4_addr, 587, timeout=15) as smtp:
+            smtp.ehlo()
             smtp.starttls()
+            smtp.ehlo()
             smtp.login(EMAIL_ADDRESS, EMAIL_APP_PASSWORD)
             smtp.send_message(msg)
         logger.info("Email sent successfully")
