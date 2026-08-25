@@ -12,7 +12,7 @@ import logging
 from styles import CSS, JS, EXAMPLES
 import socket
 
-ipaddr_list = socket.getaddrinfo()
+ipaddr_list = socket.getaddrinfo
 
 def get_ipv4_only(*args, **kwargs):
     return [ai for ai in ipaddr_list(*args, **kwargs) if ai[0] == socket.AF_INET]
