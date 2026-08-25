@@ -204,8 +204,6 @@ starlette==1.6.0
     #   gradio
     #   mcp
     #   sse-starlette
-styles==0.2.0
-    # via digital-me (pyproject.toml)
 tomlkit==0.14.0
     # via gradio
 tqdm==4.70.0
