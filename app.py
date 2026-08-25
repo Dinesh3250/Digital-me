@@ -8,6 +8,7 @@ import gradio as gr
 from agents import Agent, function_tool, Runner, trace, SQLiteSession, ModelSettings
 from email.message import EmailMessage
 import smtplib
+import logging
 from styles import CSS, JS, EXAMPLES
 
 load_dotenv(override=True)
@@ -17,8 +18,10 @@ EMAIL_ADDRESS = os.environ.get("EMAIL_ADDRESS")
 EMAIL_SMTP_SERVER = os.environ.get("EMAIL_SMTP_SERVER")
 EMAIL_APP_PASSWORD = os.environ.get("EMAIL_APP_PASSWORD")
 
+logger = logging.getLogger(__name__)
+
 @function_tool
-def send_email(subject:str, text_body:str, html_body:str)->str:
+def send_email(subject: str, text_body: str, html_body: str) -> str:
     """
     Sends an email with the given subject, text body, and HTML body to the specified recipient.
 
@@ -26,6 +29,7 @@ def send_email(subject:str, text_body:str, html_body:str)->str:
         subject (str): The subject of the email.
         text_body (str): The plain text content of the email.
         html_body (str): The HTML content of the email.
+
     """
     msg = EmailMessage()
     msg['Subject'] = subject
@@ -33,12 +37,20 @@ def send_email(subject:str, text_body:str, html_body:str)->str:
     msg['To'] = EMAIL_ADDRESS
     msg.set_content(text_body)
     msg.add_alternative(html_body, subtype='html')
-    with smtplib.SMTP(EMAIL_SMTP_SERVER, 587) as smtp:
-        smtp.starttls()
-        smtp.login(EMAIL_ADDRESS, EMAIL_APP_PASSWORD)
-        smtp.send_message(msg)
 
-    return "Email Sent Successfully"
+    try:
+        with smtplib.SMTP(EMAIL_SMTP_SERVER, 587, timeout=15) as smtp:
+            smtp.starttls()
+            smtp.login(EMAIL_ADDRESS, EMAIL_APP_PASSWORD)
+            smtp.send_message(msg)
+        logger.info("Email sent successfully")
+        print("EMAIL SENT SUCCESSFULLY", flush=True)
+        return "Email Sent Successfully"
+    except Exception as e:
+        logger.error(f"EMAIL SEND FAILED: {type(e).__name__}: {e}", exc_info=True)
+        print(f"EMAIL SEND FAILED: {type(e).__name__}: {e}", flush=True)
+        return f"Failed to send email: {type(e).__name__}"
+
 
 reader = PdfReader("linkedin.pdf")
 linkedin = ""
@@ -84,6 +96,7 @@ async def chat(message, history):
         result = await Runner.run(twin_agent, message, session=session)
     return result.final_output
     
+
 if __name__ == "__main__":
     gr.ChatInterface(chat,
                      examples=EXAMPLES,
