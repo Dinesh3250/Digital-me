@@ -167,7 +167,10 @@ def poll_for_reply(history, request: gr.Request):
     if not replies:
         return gr.skip()
     for r in replies:
-        history.append((None, f"💬 Dinesh (re: \"{r['question']}\"): {r['answer']}"))
+        history.append({
+            "role": "assistant",
+            "content": f"💬 Dinesh (re: \"{r['question']}\"): {r['answer']}"
+            })
     return history
 
 with gr.Blocks(css=CSS, js=JS, theme=gr.themes.Base()) as demo:
