@@ -169,7 +169,8 @@ def poll_for_reply(history, request: gr.Request):
     for r in replies:
         history.append({
             "role": "assistant",
-            "content": f"💬 Dinesh (re: \"{r['question']}\"): {r['answer']}"
+            "content": r["answer"],
+            "metadata": {"title": f'💬 Dinesh replied to: "{r["question"]}"'}
             })
     return history
 

@@ -12,45 +12,49 @@ EXAMPLES = [
 ]
 
 CSS = """
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
 :root {
   --twin-gold: #ecad0a;
   --twin-blue: #209dd7;
   --twin-purple: #753991;
-  --twin-bg: #0d0d10;
-  --twin-surface: #16161b;
-  --twin-surface-2: #1c1c22;
-  --twin-border: #2a2a32;
-  --twin-border-strong: #3a3a44;
-  --twin-text: #ececef;
-  --twin-muted: #8c8c95;
+
+  --twin-bg: #0b0b0e;
+  --twin-surface: #141418;
+  --twin-surface-2: #1b1b21;
+  --twin-surface-3: #232329;
+  --twin-border: #26262e;
+  --twin-border-strong: #37373f;
+  --twin-text: #f0f0f2;
+  --twin-text-dim: #b8b8c2;
+  --twin-muted: #7d7d87;
 }
 
-/* Light mode: Gradio adds `.dark` to <body> when dark; absence = light.
-   Only the neutral palette flips — gold/blue/purple accents stay identical. */
 body:not(.dark) {
-  --twin-bg: #f4f4f6;
+  --twin-bg: #f6f6f8;
   --twin-surface: #ffffff;
-  --twin-surface-2: #ededf0;
-  --twin-border: #dcdce2;
-  --twin-border-strong: #b8b8c0;
-  --twin-text: #1a1a20;
-  --twin-muted: #6a6a72;
+  --twin-surface-2: #f0f0f3;
+  --twin-surface-3: #e8e8ec;
+  --twin-border: #e0e0e6;
+  --twin-border-strong: #c6c6d0;
+  --twin-text: #17171b;
+  --twin-text-dim: #46464f;
+  --twin-muted: #7a7a84;
 }
 
 footer, .built-with, .show-api, .api-docs { display: none !important; }
-
 html, body, gradio-app { background: var(--twin-bg) !important; }
 
-/* ---------- Stable layout ---------- */
+/* ---------- Layout ---------- */
 .gradio-container {
   background: var(--twin-bg) !important;
   color: var(--twin-text) !important;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
   width: 100% !important;
-  max-width: 880px !important;
+  max-width: 760px !important;
   min-width: 0 !important;
   margin: 0 auto !important;
-  padding: 32px 24px 48px !important;
+  padding: 56px 24px 48px !important;
 }
 .gradio-container .main, .gradio-container .contain, .gradio-container .wrap {
   width: 100% !important;
@@ -59,16 +63,35 @@ html, body, gradio-app { background: var(--twin-bg) !important; }
 }
 .gradio-container * { min-width: 0; }
 
-/* ---------- Title ---------- */
+/* ---------- Header block ---------- */
 .gradio-container h1 {
   color: var(--twin-text) !important;
-  font-size: 26px !important;
-  font-weight: 700 !important;
+  font-size: 32px !important;
+  font-weight: 800 !important;
   letter-spacing: -0.02em !important;
-  border-left: 3px solid var(--twin-gold);
-  padding-left: 12px !important;
-  margin: 4px 0 8px !important;
+  line-height: 1.15 !important;
+  margin: 0 0 10px !important;
   text-align: left !important;
+  position: relative;
+  padding-left: 16px !important;
+}
+.gradio-container h1::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 3px; bottom: 3px;
+  width: 3px;
+  background: linear-gradient(180deg, var(--twin-gold), var(--twin-blue));
+}
+
+/* Description line under the title */
+.gradio-container > .main > .wrap > .contain > div:first-child .prose,
+.gradio-container .app > .prose {
+  color: var(--twin-text-dim) !important;
+  font-size: 15px !important;
+  line-height: 1.6 !important;
+  padding-left: 16px !important;
+  margin: 0 0 32px !important;
+  max-width: 52ch;
 }
 
 /* ---------- Sharp corners on structural pieces ---------- */
@@ -78,7 +101,6 @@ button, input, textarea,
   border-radius: 0 !important;
 }
 
-/* ---------- Block surfaces ---------- */
 .block, .form { background: transparent !important; box-shadow: none !important; }
 
 /* ---------- Hide the Chatbot label / header strip ---------- */
@@ -94,12 +116,12 @@ button, input, textarea,
 .chatbot, .chatbot.block {
   background: var(--twin-surface) !important;
   border: 1px solid var(--twin-border) !important;
-  min-height: 460px !important;
-  box-shadow: none !important;
+  min-height: 440px !important;
+  box-shadow: 0 1px 0 var(--twin-border), 0 12px 32px -20px rgba(0,0,0,0.6) !important;
 }
 .chatbot .placeholder, .chatbot .placeholder * { color: var(--twin-muted) !important; }
 
-/* ---------- Message rows: strip parent backgrounds ---------- */
+/* ---------- Message rows ---------- */
 .message-row,
 .message-row > div,
 .message-row .role,
@@ -109,16 +131,16 @@ button, input, textarea,
   box-shadow: none !important;
 }
 
-/* ---------- Reset borders on every bubble variant first ---------- */
 .message-row .message,
 .message-row .message-bubble,
 .message-row .bubble {
   border: 0 !important;
   box-shadow: none !important;
-  padding: 6px 10px !important;
+  padding: 10px 14px !important;
+  margin: 3px 0 !important;
 }
 
-/* ---------- Bubble backgrounds (broad to cover Gradio variants) ---------- */
+/* ---------- Bubble backgrounds ---------- */
 .message-row.user-row .message,
 .message-row.user-row .message-bubble,
 .message-row.user-row .bubble,
@@ -135,57 +157,44 @@ button, input, textarea,
 .message-row[data-role="assistant"] .message-bubble {
   background: var(--twin-surface-2) !important;
   color: var(--twin-text) !important;
-}
-
-/* ---------- Purple stripe ----------
-   Apply to every common bubble class for assistant rows (we don't know which
-   one the running Gradio uses), then suppress on any *nested* instance so the
-   stripe lands on the outermost matching element only — exactly one stripe. */
-.message-row.bot-row .message,
-.message-row.bot-row .bubble,
-.message-row.bot-row .message-bubble,
-.message-row[data-role="assistant"] .message,
-.message-row[data-role="assistant"] .bubble,
-.message-row[data-role="assistant"] .message-bubble {
   border-left: 2px solid var(--twin-purple) !important;
 }
 
+/* prevent stripe doubling on nested elements */
 .message-row.bot-row .message .message,
 .message-row.bot-row .message .bubble,
-.message-row.bot-row .message .message-bubble,
 .message-row.bot-row .bubble .message,
 .message-row.bot-row .bubble .bubble,
-.message-row.bot-row .bubble .message-bubble,
-.message-row.bot-row .message-bubble .message,
-.message-row.bot-row .message-bubble .bubble,
-.message-row.bot-row .message-bubble .message-bubble,
 .message-row[data-role="assistant"] .message .message,
-.message-row[data-role="assistant"] .message .bubble,
-.message-row[data-role="assistant"] .message .message-bubble,
-.message-row[data-role="assistant"] .bubble .message,
-.message-row[data-role="assistant"] .bubble .bubble,
-.message-row[data-role="assistant"] .bubble .message-bubble,
-.message-row[data-role="assistant"] .message-bubble .message,
-.message-row[data-role="assistant"] .message-bubble .bubble,
-.message-row[data-role="assistant"] .message-bubble .message-bubble {
+.message-row[data-role="assistant"] .bubble .bubble {
   border-left: 0 !important;
 }
 
-/* ---------- Uniform font size in bubbles ----------
-   The "first paragraph different size" was caused by a leaky `.prose p:first-of-type`
-   selector. Force every paragraph in a bubble to the same size. */
+/* ---------- Metadata / titled blocks (e.g. Dinesh's direct replies) ---------- */
+.message-row .metadata,
+.message-row [class*="metadata"] {
+  color: var(--twin-gold) !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  opacity: 0.9 !important;
+  border-bottom: 1px solid var(--twin-border) !important;
+  padding-bottom: 6px !important;
+  margin-bottom: 6px !important;
+}
+
+/* ---------- Typography inside bubbles ---------- */
 .message-row .message,
 .message-row .message-bubble,
 .message-row .bubble {
-  font-size: 14px !important;
-  line-height: 1.55 !important;
+  font-size: 14.5px !important;
+  line-height: 1.6 !important;
 }
 .message-row .message p,
 .message-row .message-bubble p,
 .message-row .bubble p,
 .message-row .prose p {
-  font-size: 14px !important;
-  line-height: 1.55 !important;
+  font-size: 14.5px !important;
+  line-height: 1.6 !important;
   margin: 0 0 8px !important;
   color: inherit !important;
 }
@@ -194,7 +203,6 @@ button, input, textarea,
 .message-row .bubble p:last-child,
 .message-row .prose p:last-child { margin-bottom: 0 !important; }
 
-/* Strip stray internal borders/backgrounds from anything inside a bubble */
 .message-row .message *,
 .message-row .message-bubble *,
 .message-row .bubble * {
@@ -207,49 +215,51 @@ button, input, textarea,
 .message-row .message-bubble a {
   color: var(--twin-gold) !important;
   text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
-/* ---------- Input row alignment ---------- */
+/* ---------- Input row ---------- */
 .input-row,
 .gr-input-row,
 .chat-input-row,
-form[class*="input"] { align-items: stretch !important; }
+form[class*="input"] { align-items: stretch !important; gap: 8px !important; }
 
 textarea, input[type="text"] {
   background: var(--twin-surface) !important;
   border: 1px solid var(--twin-border) !important;
   color: var(--twin-text) !important;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
-  font-size: 14px !important;
-  padding: 12px 14px !important;
+  font-size: 14.5px !important;
+  padding: 13px 16px !important;
   line-height: 1.4 !important;
   min-height: 48px !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 textarea:focus, input[type="text"]:focus {
   border-color: var(--twin-gold) !important;
   outline: none !important;
-  box-shadow: 0 0 0 1px var(--twin-gold) !important;
+  box-shadow: 0 0 0 3px rgba(236, 173, 10, 0.18) !important;
 }
 textarea::placeholder, input::placeholder { color: var(--twin-muted) !important; }
 
 /* ---------- Buttons ---------- */
 button {
-  font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace !important;
-  letter-spacing: 0.12em !important;
-  text-transform: uppercase !important;
-  font-size: 11px !important;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-size: 14px !important;
   font-weight: 600 !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
   border: 1px solid var(--twin-border) !important;
-  background: transparent !important;
+  background: var(--twin-surface) !important;
   color: var(--twin-text) !important;
-  padding: 0 16px !important;
+  padding: 0 18px !important;
   min-height: 48px !important;
   align-self: stretch !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
   cursor: pointer;
-  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 button:hover { border-color: var(--twin-gold) !important; color: var(--twin-gold) !important; }
 
@@ -261,10 +271,11 @@ button.submit-button,
 button.lg.primary {
   background: var(--twin-gold) !important;
   border: 1px solid var(--twin-gold) !important;
-  color: #111111 !important;
+  color: #14110a !important;
+  font-weight: 700 !important;
   min-height: 48px !important;
   align-self: stretch !important;
-  padding: 0 14px !important;
+  padding: 0 16px !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -273,12 +284,11 @@ button.primary:hover,
 button.submit:hover,
 .submit-button:hover,
 button.lg.primary:hover {
-  background: #ffc320 !important;
-  border-color: #ffc320 !important;
-  color: #111111 !important;
+  background: #ffc42e !important;
+  border-color: #ffc42e !important;
+  color: #14110a !important;
 }
 
-/* ---------- Submit-button icon: center vertically and size correctly ---------- */
 button.submit svg,
 button.submit-button svg,
 .submit-button svg,
@@ -289,7 +299,7 @@ button[variant="primary"] svg {
   margin: 0 auto !important;
   display: block !important;
   align-self: center !important;
-  color: #111111 !important;
+  color: #14110a !important;
   fill: currentColor !important;
   stroke: currentColor !important;
 }
@@ -298,18 +308,15 @@ button[variant="primary"] svg {
 .examples, .examples-holder, [data-testid="examples"] {
   background: transparent !important;
   padding: 0 !important;
-  margin-top: 14px !important;
+  margin-top: 16px !important;
 }
 .examples table, .examples-table { background: transparent !important; border: 0 !important; }
 .examples button, .example, .examples td button, [data-testid="examples"] button {
   background: var(--twin-surface) !important;
   border: 1px solid var(--twin-border) !important;
-  color: var(--twin-text) !important;
-  text-transform: none !important;
-  letter-spacing: 0 !important;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
-  font-size: 13px !important;
+  color: var(--twin-text-dim) !important;
   font-weight: 400 !important;
+  font-size: 13px !important;
   padding: 10px 14px !important;
   text-align: left !important;
   min-height: 0 !important;
@@ -342,13 +349,13 @@ button[variant="primary"] svg {
 ::-webkit-scrollbar-thumb { background: var(--twin-border-strong); }
 ::-webkit-scrollbar-thumb:hover { background: var(--twin-purple); }
 
-/* ---------- Selection ---------- */
-::selection { background: var(--twin-gold); color: #111111; }
+::selection { background: var(--twin-gold); color: #14110a; }
 
 /* ---------- Mobile ---------- */
 @media (max-width: 640px) {
-  .gradio-container { padding: 22px 14px 36px !important; }
-  .gradio-container h1 { font-size: 22px !important; }
+  .gradio-container { padding: 40px 16px 36px !important; }
+  .gradio-container h1 { font-size: 24px !important; }
+  .chatbot, .chatbot.block { min-height: 380px !important; }
 }
 """
 
@@ -362,8 +369,6 @@ JS = """
   };
   setTimeout(focusInput, 300);
 
-  // Re-focus the message field whenever Gradio re-enables it
-  // (i.e. after the assistant finishes responding).
   const watchTextarea = (area) => {
     if (area.dataset.twinWatched) return;
     area.dataset.twinWatched = '1';
