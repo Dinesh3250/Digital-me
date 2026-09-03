@@ -15,20 +15,17 @@ from dataclasses import dataclass
 import socket
 import logging
 from styles import CSS, JS, EXAMPLES
+from collections import defaultdict
 
-ipaddr_list = socket.getaddrinfo
-
-def get_ipv4_only(*args, **kwargs):
-    return [ai for ai in ipaddr_list(*args, **kwargs) if ai[0] == socket.AF_INET]
-
-socket.getaddrinfo = get_ipv4_only
+MESSAGE_LIMIT = 5
+session_message_count = defaultdict(int)
 
 load_dotenv(override=True)
 openai = OpenAI()
 
 EMAIL_ADDRESS = os.environ.get("EMAIL_ADDRESS")
-EMAIL_SMTP_SERVER = os.environ.get("EMAIL_SMTP_SERVER")
-EMAIL_APP_PASSWORD = os.environ.get("EMAIL_APP_PASSWORD")
+RESEND_API_KEY = os.environ.get("RESEND_API_KEY")
+RESEND_HTTPS_SERVER = os.environ.get("RESEND_HTTPS_SERVER")
 TELEGRAM_BOT_TOKEN= os.environ.get("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID")
 
@@ -45,22 +42,20 @@ def send_email(subject: str, text_body: str, html_body: str) -> str:
         html_body (str): The HTML content of the email.
 
     """
-    msg = EmailMessage()
-    msg['Subject'] = subject
-    msg['From'] = EMAIL_ADDRESS
-    msg['To'] = EMAIL_ADDRESS
-    msg.set_content(text_body)
-    msg.add_alternative(html_body, subtype='html')
-
     try:
-        ipv4_addr = socket.getaddrinfo(EMAIL_SMTP_SERVER, 587, socket.AF_INET)[0][4][0]
-
-        with smtplib.SMTP(ipv4_addr, 587, timeout=15) as smtp:
-            smtp.ehlo()
-            smtp.starttls()
-            smtp.ehlo()
-            smtp.login(EMAIL_ADDRESS, EMAIL_APP_PASSWORD)
-            smtp.send_message(msg)
+        resp = requests.post(
+            RESEND_HTTPS_SERVER,
+            headers={"Authorization": f"Bearer {RESEND_API_KEY}"},
+            json={
+                "from": "Digital Twin <onboarding@resnd.dev",
+                "to": EMAIL_ADDRESS,
+                "subject": subject,
+                "text": text_body,
+                "html": html_body,
+            },
+            timeout=15,
+        )
+        resp.raise_for_status()
         logger.info("Email sent successfully")
         print("EMAIL SENT SUCCESSFULLY", flush=True)
         return "Email Sent Successfully"
@@ -152,11 +147,21 @@ Write as Dinesh Kumar Gummadavelli would — [describe: e.g., "direct, warm, no 
 """
 
 twin_agent = Agent("Digital_twin", instructions=system_prompt, model="gpt-4o-mini", tools=[send_email, contact_dinesh])
-
+session = SQLiteSession("32")
 async def chat(message, history, request: gr.Request):
     session_id = request.session_hash
+
+    if session_message_count[session_id] >= MESSAGE_LIMIT:
+        return (
+            "You've reached the message limit for this session — thanks for chatting! "
+            "Feel free to start a new session, or reach out to Dinesh directly if you'd "
+            "like to continue the conversation."
+        )
+
+    session_message_count[session_id] += 1
+
     with trace("Digital_me"):
-        result = await Runner.run(twin_agent, message, context=TwinContext(session_id=session_id))
+        result = await Runner.run(twin_agent, message, context=TwinContext(session_id=session_id), session=session)
     return result.final_output
 
 
