@@ -59,6 +59,11 @@ def send_email(subject: str, text_body: str, html_body: str) -> str:
         logger.info("Email sent successfully")
         print("EMAIL SENT SUCCESSFULLY", flush=True)
         return "Email Sent Successfully"
+    except requests.exceptions.RequestException as e:
+        error_detail = e.response.text if e.response is not None else str(e)
+        logger.error(f"EMAIL SEND FAILED: {error_detail}", exc_info=True)
+        print(f"EMAIL SEND FAILED (HTTP {e.response.status_code}): {error_detail}", flush=True)
+        return f"Failed to send email: {error_detail}"
     except Exception as e:
         logger.error(f"EMAIL SEND FAILED: {type(e).__name__}: {e}", exc_info=True)
         print(f"EMAIL SEND FAILED: {type(e).__name__}: {e}", flush=True)
