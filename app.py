@@ -48,7 +48,7 @@ def send_email(subject: str, text_body: str, html_body: str) -> str:
             headers={"Authorization": f"Bearer {RESEND_API_KEY}"},
             json={
                 "from": "Digital Twin <onboarding@resend.dev",
-                "to": EMAIL_ADDRESS,
+                "to": [EMAIL_ADDRESS],
                 "subject": subject,
                 "text": text_body,
                 "html": html_body,
